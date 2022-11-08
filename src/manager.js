@@ -1,12 +1,17 @@
 import * as PIXI from "pixi.js"
 import { Group } from "tweedle.js";
-import { Viewport, click } from "pixi-viewport";
+import { Viewport } from "pixi-viewport";
 export class Manager {
      constructor() { 
+        console.log(Viewport,
+            Viewport.constructor, new Viewport())
      }
-static currentScene;
-static navBar;
-    // With getters but not setters, these variables become read-only
+     static viewport;
+     static navBar;
+     static currentScene;
+
+
+// With getters but not setters, these variables become read-only
  static get width() {
         return Manager._width;
     }
@@ -37,50 +42,46 @@ static navBar;
 
         Manager.app.stage.on("mousemove", Manager.mouseCoordinates)
         Manager.app.ticker.add(Manager.update)
-        console.log(Manager.app)
     }
 
- static changeScene(newScene) {
-        if (Manager.currentScene) {
-            Manager.app.stage.removeChild(Manager.currentScene);
-            Manager.currentScene.destroy();
-        }
+static vp() {
+ Manager.viewport = new Viewport({
+        screenWidth: window.innerWidth,              // screen width used by viewport (eg, size of canvas)
+        screenHeight: window.innerHeight,            // screen height used by viewport (eg, size of canvas)
+        worldWidth: Manager.width,                         // world width used by viewport (automatically calculated based on container width)
+        worldHeight: Manager.height,                       // world height used by viewport (automatically calculated based on container height)
+        passiveWheel: false,                            // whether the 'wheel' event is set to passive (note: if false, e.preventDefault() will be called when wheel is used over the viewport)
+        // stopPropagation: false,                      // whether to stopPropagation of events that impact the viewport (except wheel events, see options.passiveWheel)
+        // forceHitArea: null,                          // change the default hitArea from world size to a new value
+        // noTicker: false,                             // set this if you want to manually call update() function on each frame
+        // divWheel: null,                              // div to attach the wheel event (uses document.body as default)
+        // disableOnContextMenu: false,                 // remove oncontextmenu=() => {} from the divWheel element
+        interaction: Manager.app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
 
-        Manager.currentScene = newScene;
-        Manager.app.stage.addChildAt(Manager.currentScene, 0);
-    }
+    })
+Manager.app.stage.addChildAt(Manager.viewport, 0) // could have just used addChild, just being safe
+ }
 
  static annexes(navScene) {
     Manager.navbar = navScene;
     Manager.app.stage.addChild(Manager.navbar);
  }
- static _viewport
- static _application
- static domEase
- static FADE_TIME = 2000
+ 
+ static changeScene(newScene, parent) {
+    if (Manager.currentScene) {
+       if (parent === "viewport") Manager.app.stage.removeChild(Manager.currentScene);
+       else                       Manager.viewport.removeChild(Manager.currentScene); 
 
-static viewport() {
-    Manager._viewport = Manager.app.stage.addChild(new Viewport(
-         {
-             interaction: Manager.app.renderer.plugins.interaction,
-             passiveWheel: false,
-             stopPropagation: true
-         }))
-    Manager._viewport
-         .drag({ clampWheel: false })
-         .wheel({ smooth: 3, trackpadPinch: true, wheelZoom: false, })
-         .pinch()
-         .decelerate()
- 
-     // test for x/y independent scaling
-     // _viewport.scale.y = 1.5
- 
-     // test for removeListeners()
-     // _viewport.removeListeners()
- 
-     // _viewport.clampZoom({ minWidth: 1000 })
+        Manager.currentScene.destroy();
 
- }
+    
+    }
+
+    Manager.currentScene = newScene;
+    if (parent == "viewport")     Manager.viewport.addChildAt(Manager.currentScene, 0);
+    else                          Manager.app.stage.addChildAt(Manager.currentScene, 0);
+    ; 
+}
 
  
  static mouseCoordinates () {
@@ -88,7 +89,6 @@ static viewport() {
   if (Manager.currentScene.moveOrbits) Manager.currentScene.moveOrbits(localMousePos.x, localMousePos.y)
   }
 static update(deltaTime) {
-
       if (Manager.currentScene) {
             Manager.currentScene.update(deltaTime)
         }

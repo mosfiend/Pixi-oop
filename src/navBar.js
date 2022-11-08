@@ -142,7 +142,7 @@ activateProject2 () {
      
      expandMovement.chain(shrinkMovement)
 this.prevProject.y = this.project2.y
-Manager.changeScene(new WorldMap())
+Manager.changeScene(new WorldMap(), "viewport")
 
 }
 activateProject3 () { 

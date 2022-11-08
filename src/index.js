@@ -6,4 +6,6 @@ import { Viewport } from 'pixi-viewport'
 Manager.initialize(window.innerWidth, window.innerHeight, 0x333377);
 
 const  loaderScene = new LoaderScene()
+
+Manager.vp()
 Manager.changeScene(loaderScene)

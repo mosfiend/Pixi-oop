@@ -3,7 +3,7 @@ import { Manager } from "./manager.js";
 import { Navbar } from "./navBar.js";
 import { assets } from "./assets/assets.js";
 import { WorldMap } from "./scenes/interactive-scene.js";
-import * as viewport from "./map-drag.js"
+import { OrbitScene } from "./scenes/orbit-scene.js";
 export class LoaderScene extends Container {
 
     constructor() {
@@ -35,9 +35,9 @@ export class LoaderScene extends Container {
         this.loaderBarFill.scale.x = progressRatio;
     }
      gameLoaded() {
-        Manager.changeScene(new WorldMap());
         Manager.annexes(new Navbar())
-        viewport.create(Manager.app.renderer)
+        Manager.changeScene(new OrbitScene());
+
  }
     update(deltaTime) {
     }
