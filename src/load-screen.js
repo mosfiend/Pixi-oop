@@ -17,14 +17,13 @@ export class LoaderScene extends Container {
     this.loaderBarBoder = new Graphics();
         this.loaderBarBoder.lineStyle(10, 0x0, 1)
             .drawRect(0, 0, loaderBarWidth, 50);
-
         this.loaderBar = new Container();
         this.loaderBar.addChild(this.loaderBarFill);
         this.loaderBar.addChild(this.loaderBarBoder);
         this.loaderBar.position.x = (Manager.width - this.loaderBar.width) / 2;
         this.loaderBar.position.y = (Manager.height - this.loaderBar.height) / 2;
         this.addChild(this.loaderBar);
-
+        this.promOut = new Promise((resolve)=> {resolve()})
         Loader.shared.add(assets)
         Loader.shared.onProgress.add(this.downloadProgress.bind(this));
         Loader.shared.onComplete.once(this.gameLoaded.bind(this));
@@ -35,10 +34,16 @@ export class LoaderScene extends Container {
         this.loaderBarFill.scale.x = progressRatio;
     }
      gameLoaded() {
-        Manager.annexes(new Navbar())
-        Manager.changeScene(new OrbitScene());
-
+        Manager.annexes(new Navbar());
+        Manager.loadingScene.transitionOut();
+        Manager.startScene(new OrbitScene());
  }
+
+ transitionOut() {
+    Manager.app.stage.removeChild(Manager.loadingScene); 
+    Manager.loadingScene.destroy();
+ }
+
     update(deltaTime) {
     }
 } 

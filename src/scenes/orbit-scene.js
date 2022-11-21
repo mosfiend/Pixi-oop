@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { Tween, Easing } from "tweedle.js";
+import { Tween, Easing, Group } from "tweedle.js";
 import { Manager } from "../manager.js"
 
 export  class OrbitScene extends PIXI.Container {
@@ -58,6 +58,9 @@ this.reactLogo.x = -447
 this.reactLogo.y = 0
 this.pixiContainer.addChild(this.pixiLogo)
 this.reactContainer.addChild(this.reactLogo)
+Manager.app.stage.on("mousemove", ()=>{
+      this.moveOrbits(...Manager.mouseCoordinates())});
+
 }
 
 moveOrbits (X, Y) {
@@ -103,6 +106,28 @@ const moveAll = new Tween(curPos)
       })
       .easing(Easing.Cubic.Out)
       .start()
+}
+
+transitionIn() {
+      Manager.app.stage.addChildAt(Manager.skillScene,0)
+}
+transitionOut() {
+ const fadeOut=    new Tween(this.circle1.scale)
+      .to({x:12,y:12},1000)
+      .onUpdate(()=> {
+            this.circle2.scale = this.circle1.scale*0.7
+            this.circle3.scale = this.circle1.scale*0.6
+            this.circle4.scale = this.circle1.scale*0.5
+this.alpha = this.alpha*((12-this.circle1.scale.x)/12)
+      })
+      .onComplete(()=> {
+            Manager.skillScene.destroy();
+            Manager.app.stage.removeChild(Manager.skillScene);
+              })
+      .easing(Easing.Quadratic.InOut)
+
+              Manager.app.stage.off("mousemove")
+              fadeOut.start()
 }
 
 update(deltaTime) {

@@ -116,7 +116,7 @@ const  shrinkMovement = new Tween(this.projectBtnTransition2)
 expandMovement.chain(shrinkMovement)
 this.prevProject.y = this.project1.y
 
-Manager.changeScene(new OrbitScene())
+Manager.changeScene(new OrbitScene, "skillScene")
             }
 
 activateProject2 () {
@@ -142,7 +142,7 @@ activateProject2 () {
      
      expandMovement.chain(shrinkMovement)
 this.prevProject.y = this.project2.y
-Manager.changeScene(new WorldMap(), "viewport")
+Manager.changeScene(new WorldMap, "mapScene")
 
 }
 activateProject3 () { 
@@ -173,7 +173,6 @@ expandMovement.chain(shrinkMovement)
        }
        
      update(deltaTime) {
-        Group.shared.update()
 
         this.activeProject.y = this.projectBtnTransition1.y
     }

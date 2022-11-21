@@ -1,15 +1,19 @@
-import * as PIXI from "pixi.js"
-import { Group } from "tweedle.js";
+import * as PIXI from "pixi.js";
+import {Tween, Group } from "tweedle.js";
 import { Viewport } from "pixi-viewport";
+import { OrbitScene } from "./scenes/orbit-scene";
+import { WorldMap } from "./scenes/interactive-scene";
 export class Manager {
      constructor() { 
-        console.log(Viewport,
-            Viewport.constructor, new Viewport())
      }
      static viewport;
      static navBar;
+     static mapScene;
+     static skillScene;
+     static loadingScene;
      static currentScene;
-
+     static x;
+     static y;
 
 // With getters but not setters, these variables become read-only
  static get width() {
@@ -40,7 +44,6 @@ export class Manager {
         Manager.app.stage.buttonMode = true;
         Manager.app.stage.sortableChildren = true;
 
-        Manager.app.stage.on("mousemove", Manager.mouseCoordinates)
         Manager.app.ticker.add(Manager.update)
     }
 
@@ -66,34 +69,39 @@ Manager.app.stage.addChildAt(Manager.viewport, 0) // could have just used addChi
     Manager.navbar = navScene;
     Manager.app.stage.addChild(Manager.navbar);
  }
- 
- static changeScene(newScene, parent) {
-    if (Manager.currentScene) {
-       if (parent === "viewport") Manager.app.stage.removeChild(Manager.currentScene);
-       else                       Manager.viewport.removeChild(Manager.currentScene); 
-
-        Manager.currentScene.destroy();
-
-    
-    }
-
-    Manager.currentScene = newScene;
-    if (parent == "viewport")     Manager.viewport.addChildAt(Manager.currentScene, 0);
-    else                          Manager.app.stage.addChildAt(Manager.currentScene, 0);
-    ; 
+static loadScene(loadingScene) {
+Manager.loadingScene = loadingScene
+    Manager.app.stage.addChild(Manager.loadingScene); 
+Manager.app.stage.addChild(Manager.loadingScene)
 }
 
- 
- static mouseCoordinates () {
-  let localMousePos =  Manager.app.renderer.plugins.interaction.mouse.global
-  if (Manager.currentScene.moveOrbits) Manager.currentScene.moveOrbits(localMousePos.x, localMousePos.y)
-  }
+static startScene(scene1) {
+    Manager.currentScene = "skillScene"
+    Manager.skillScene = scene1
+    Manager.app.stage.addChild(Manager.skillScene)
+}
+
+static changeScene(scene, name) {  
+    Manager[name] = scene
+    Manager[Manager.currentScene].transitionOut()
+    Manager.currentScene = name
+    Manager[Manager.currentScene].transitionIn()
+    }
+
+static mouseCoordinates () {
+  let mousePos =  Manager.app.renderer.plugins.interaction.mouse.global;
+    return [mousePos.x, mousePos.y]
+}
+
 static update(deltaTime) {
+    Group.shared.update()
       if (Manager.currentScene) {
-            Manager.currentScene.update(deltaTime)
+            Manager[Manager.currentScene].update(deltaTime)
         }
+
       if (Manager.navBar) {
             Manager.navBar.update(deltaTime)
+
         }
     }
 }
