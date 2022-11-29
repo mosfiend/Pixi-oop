@@ -23,8 +23,7 @@ export class LoaderScene extends Container {
         this.loaderBar.position.x = (Manager.width - this.loaderBar.width) / 2;
         this.loaderBar.position.y = (Manager.height - this.loaderBar.height) / 2;
         this.addChild(this.loaderBar);
-        this.promOut = new Promise((resolve)=> {resolve()})
-        Loader.shared.add(assets)
+        Loader.shared.add(assets);
         Loader.shared.onProgress.add(this.downloadProgress.bind(this));
         Loader.shared.onComplete.once(this.gameLoaded.bind(this));
         Loader.shared.load();

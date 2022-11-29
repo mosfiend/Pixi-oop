@@ -17,11 +17,12 @@ export class Manager {
 
 // With getters but not setters, these variables become read-only
  static get width() {
-        return Manager._width;
+        return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     }
  static get height() {
-        return Manager._height;
+        return Math.max(document.documentElement.clientHeight, window.innerWidth || 0);
     }
+    
 
     // Use this function ONCE to start the entire machinery
  static initialize(width, height, background) {
@@ -32,21 +33,25 @@ export class Manager {
 
         // Create our pixi app
         Manager.app = new PIXI.Application({
-            view: document.getElementById("pixi-canvas"),
-            resizeTo: window,
-            resolution: window.devicePixelRatio || 1,
-            autoDensity: true,
-            backgroundColor: background,
-            width: width,
-            height: height
+        view: document.getElementById("pixi-canvas"),
+        resizeTo: window, // This line here handles the actual resize!
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true,
+        backgroundColor: background
         });
         Manager.app.stage.interactive = true  
-        Manager.app.stage.buttonMode = true;
         Manager.app.stage.sortableChildren = true;
 
         Manager.app.ticker.add(Manager.update)
+        window.addEventListener("resize", Manager.resize);
     }
 
+     static resize() {
+        if (Manager[Manager.currentScene]) {
+            Manager[Manager.currentScene].resize(Manager.width, Manager.height);
+        }
+        Manager.navbar.resize(Manager.width,Manager.height)
+    }
 static vp() {
  Manager.viewport = new Viewport({
         screenWidth: window.innerWidth,              // screen width used by viewport (eg, size of canvas)

@@ -22,7 +22,7 @@ this.circle2.beginFill(0x7BE801)
       .drawCircle(0, 0, 140)
 this.circle3.beginFill(0x7BE801)
       .drawCircle(0, 0, 200)
-this.circle4.lineStyle(10,  0x99EE00)
+this.circle4.lineStyle(3,  0x99EE00)
       .beginFill(0x7BE801)
       .drawCircle(0, 0, 260)
 this.circle5.lineStyle(3, 0x99EE00)
@@ -40,28 +40,29 @@ this.circle7.lineStyle(3, 0x99EE00)
       this.addChild(this.circle7,this.circle6,this.circle5,this.circle4,this.circle3,this.circle2,this.circle1)
       this.mousePosX =0
       this.mousePosY =0
+// this.x = Math.random()* circleHeight
+// this.y = Equation(x)
+this.pixiContainer = new skillIcons("pixiIcon",this.circle7,557, 0.2+Math.random());
+this.reactContainer = new skillIcons("reactIcon",this.circle6,447, 0.2+Math.random());
+this.htmlContainer = new skillIcons("htmlIcon",this.circle5,347, 0.2+Math.random());
+this.cssContainer = new skillIcons("cssIcon",this.circle4,257, 0.2+Math.random());
 
-this.pixiContainer = new PIXI.Container()
-this.reactContainer = new PIXI.Container()
-this.addChild(this.pixiContainer, this.reactContainer)
-this.pixiLogo = PIXI.Sprite.from("pixiIcon")
-this.pixiLogo.height = 90
-this.pixiLogo.width = 90
-this.pixiLogo.anchor.set(0.5,0.5)
-this.pixiLogo.x = 200
-this.pixiLogo.y = 560
+this.addChild(this.pixiContainer, this.reactContainer, this.htmlContainer, this.cssContainer)
+
 this.reactLogo = PIXI.Sprite.from("reactIcon")
 this.reactLogo.height = 90
 this.reactLogo.width = 90
 this.reactLogo.anchor.set(0.5,0.5)
-this.reactLogo.x = -447
-this.reactLogo.y = 0
-this.pixiContainer.addChild(this.pixiLogo)
-this.reactContainer.addChild(this.reactLogo)
+this.reactLogo.x = Math.round(Math.random()*447) * Math.sign(0.5-Math.random())
+// this.reactLogo.y = this.ge(this.reactLogo.x, this.circle1.x, this.circle1.y, 447)
+
+// this.reactContainer.addChild(this.reactLogo)
+// this.htmlContainer.addChild(this.htmlLogo)
+// this.cssContainer.addChild(this.cssLogo)
 Manager.app.stage.on("mousemove", ()=>{
       this.moveOrbits(...Manager.mouseCoordinates())});
-
 }
+
 
 moveOrbits (X, Y) {
 this.mousePosX = X
@@ -113,7 +114,7 @@ transitionIn() {
 }
 transitionOut() {
  const fadeOut=    new Tween(this.circle1.scale)
-      .to({x:12,y:12},1000)
+      .to({x:12,y:12},900)
       .onUpdate(()=> {
             this.circle2.scale = this.circle1.scale*0.7
             this.circle3.scale = this.circle1.scale*0.6
@@ -129,15 +130,55 @@ this.alpha = this.alpha*((12-this.circle1.scale.x)/12)
               Manager.app.stage.off("mousemove")
               fadeOut.start()
 }
+resize(w,h) {
+      this.screenWidth = w
+      this.screenHeight = h
+this.x = this.screenWidth/2
 
+}
 update(deltaTime) {
- this.pixiContainer.angle += 1
- this.reactContainer.angle += 1
- this.pixiLogo.angle -=1
- this.reactLogo.angle -=1
-this.pixiContainer.x = this.circle7.x
-this.pixiContainer.y = this.circle7.y
-this.reactContainer.x = this.circle6.x
-this.reactContainer.y = this.circle6.y
+      this.pixiContainer.spin();
+      this.reactContainer.spin();
+      this.htmlContainer.spin();
+      this.cssContainer.spin();
+
+//  this.reactLogo.angle -=0.2
+// this.pixiContainer.x = this.circle7.x
+// this.pixiContainer.y = this.circle7.y
+// this.reactContainer.x = this.circle6.x
+// this.reactContainer.y = this.circle6.y
  }
+}
+
+export class skillIcons extends PIXI.Container {
+      constructor(sprite,circle, R, speed) {
+            super();
+            this.speed= speed
+            this.spriteName= sprite
+            this.circle = circle
+            this[sprite] = PIXI.Sprite.from(sprite);
+            this[sprite].height = 90;
+            this[sprite].width = 90;
+            this[sprite].anchor.set(0.5,0.5);
+            this[sprite].x = Math.round(Math.random()*R) * Math.sign(0.5-Math.random());
+            this[sprite].y = this.getCircleY(this[sprite].x, circle.x, circle.y, R);
+            this.addChild(this[sprite])
+      }
+
+spin () {
+this.angle+=this.speed
+this[this.spriteName].angle-=this.speed
+this.x= this.circle.x
+this.y= this.circle.y
+}
+getCircleY  (iconX, X1,Y1, r) {
+      const delta = 4*Y1**2 - 4*((iconX-X1)**2 + Y1**2 - r**2)
+      if (delta ===0) {
+            return Y1}
+      else if (delta >0) {
+                  return  (2*Y1 + Math.sqrt(delta))/2
+      }
+      else if (delta <0) {console.log("error shoulna happened")}
+                              }
+
 }

@@ -48,16 +48,18 @@ return newId
 }
 
 transitionIn() {
-    Manager.app.stage.addChildAt(Manager.mapScene, 0)
+    Manager.viewport.addChildAt(Manager.mapScene, 0)
 }
  transitionOut() {
 Manager.mapScene.destroy();
-Manager.app.stage.removeChild(Manager.mapScene)
+Manager.viewport.removeChild(Manager.mapScene)
+}
+resize(w,h) {
+    this.screenWidth = w
+    this.screenHeight = h
 }
 
 update(deltaTime) {
-
-
     for (let layer =0;layer<this.layerIds.length;layer++) {
         if (this.layerIds[layer].length>0){
         const curLayer = this.layerIds[layer]
@@ -79,12 +81,12 @@ update(deltaTime) {
     const moveInterval =  2500+ Math.floor(Math.random()*500)
     const randomDirection =[-1,1][Math.floor(Math.random()*2)]
     
-    newBat.y = Manager.height/2 +Math.random()*Manager.height/4;
+    newBat.y = this.screenHeight/2 +Math.random()*this.screenHeight/4;
     newBat.animationSpeed = 0.1;
     
     newBat.play();
     new Tween(newBat)
-    .to({x:Manager.width+1, y:newBat.y + randomDirection*Math.floor(Math.random()*400) }, moveInterval)
+    .to({x:this.screenWidth+1, y:newBat.y + randomDirection*Math.floor(Math.random()*400) }, moveInterval)
     .yoyo(true)
     .onComplete(()=> { 
         newBat.destroy()
@@ -92,7 +94,7 @@ update(deltaTime) {
     .start();
     this.addChild(newBat);
 break;
-}
-}
-}
+            }
+        }
+    }
 }

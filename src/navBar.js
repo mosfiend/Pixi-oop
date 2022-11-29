@@ -8,12 +8,12 @@ export class Navbar extends PIXI.Container {
 
     constructor() {
         super();
-this.navX= Manager.width * 0.9
-this.navY = Manager.height * 0.2
+        this.screenWidth= Manager.width
+        this.screenHeight= Manager.height
+this.x= this.screenWidth* 0.9
+this.y = this.screenHeight * 0.2
 this.navHeight = 250
 this.navWidth = 100
-this.x = this.navX
-this.y = this.navY
 this.sortableChildren = true
 
 this.project1 = new PIXI.Graphics()
@@ -173,7 +173,12 @@ expandMovement.chain(shrinkMovement)
        }
        
      update(deltaTime) {
-
         this.activeProject.y = this.projectBtnTransition1.y
+    }
+    resize(w,h) {
+        this.screenWidth = w
+        this.screenHeight = h
+this.x= this.screenWidth* 0.9
+this.y = this.screenHeight * 0.2
     }
 }
