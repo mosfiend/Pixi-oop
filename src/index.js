@@ -1,10 +1,10 @@
 import './styles/style.scss'
 import { Manager } from './manager.js'
-import { LoaderScene } from './load-screen'
 
-Manager.initialize(window.innerWidth, window.innerHeight, 0x5555b3);
+Manager.initialize(window.innerWidth, window.innerHeight, 0x2E3037);
 Manager.vp();
-Manager.loadScene(new LoaderScene())
+Manager.startLoading()
+
 
 // Select DOM Items
 const menuBtn = document.querySelector('.menu-btn');

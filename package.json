@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.3.0",
     "@pixi/tilemap": "^3.2.2",
     "pixi-viewport": "^4.37.0",
     "pixi.js": "^6.5.1",

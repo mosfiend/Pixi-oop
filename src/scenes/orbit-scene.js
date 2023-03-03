@@ -1,21 +1,23 @@
 import * as PIXI from 'pixi.js'
+import { DisplayObject } from 'pixi.js';
 import { Tween, Easing, Group } from "tweedle.js";
 import { Manager } from "../manager.js"
 
-export  class OrbitScene extends PIXI.Container {
-constructor() {
-    super()
-    this.screenWidth = Manager.width
-    this.screenHeight = Manager.height
-    this.x = this.screenWidth/2
-    this.y = 30
-this.circle1 = new PIXI.Graphics()
-this.circle2 = new PIXI.Graphics()
-this.circle3 = new PIXI.Graphics()
-this.circle4 = new PIXI.Graphics()
-this.circle5 = new PIXI.Graphics()
-this.circle6 = new PIXI.Graphics()
-this.circle7 = new PIXI.Graphics()
+export class OrbitScene extends PIXI.Container {
+ constructor(loading) {
+    super();
+    this.alpha = 0
+    this.screenWidth = Manager.width;
+    this.screenHeight = Manager.height;
+    this.x = this.screenWidth/2;
+    this.y = 30;
+this.circle1 = new PIXI.Graphics();
+this.circle2 = new PIXI.Graphics();
+this.circle3 = new PIXI.Graphics();
+this.circle4 = new PIXI.Graphics();
+this.circle5 = new PIXI.Graphics();
+this.circle6 = new PIXI.Graphics();
+this.circle7 = new PIXI.Graphics();
 this.circle1.beginFill(0x99EE00)
       .drawCircle(0, 0, 80)
 this.circle2.beginFill(0x7BE801)
@@ -31,6 +33,8 @@ this.circle6.lineStyle(3, 0x99EE00)
       .drawCircle(0, 0, 450)
 this.circle7.lineStyle(3, 0x99EE00)
       .drawCircle(0, 0, 560)
+
+      this.circle1.alpha = 0.8
       this.circle2.alpha = 0.8
       this.circle3.alpha = 0.5
       this.circle4.alpha = 0.2
@@ -42,27 +46,25 @@ this.circle7.lineStyle(3, 0x99EE00)
       this.mousePosY =0
 // this.x = Math.random()* circleHeight
 // this.y = Equation(x)
+if (PIXI.Loader.shared.progress=== 100) {
 this.pixiContainer = new skillIcons("pixiIcon",this.circle7,557, 0.2+Math.random());
 this.reactContainer = new skillIcons("reactIcon",this.circle6,447, 0.2+Math.random());
 this.htmlContainer = new skillIcons("htmlIcon",this.circle5,347, 0.2+Math.random());
 this.cssContainer = new skillIcons("cssIcon",this.circle4,257, 0.2+Math.random());
-
 this.addChild(this.pixiContainer, this.reactContainer, this.htmlContainer, this.cssContainer)
-
-this.reactLogo = PIXI.Sprite.from("reactIcon")
-this.reactLogo.height = 90
-this.reactLogo.width = 90
-this.reactLogo.anchor.set(0.5,0.5)
-this.reactLogo.x = Math.round(Math.random()*447) * Math.sign(0.5-Math.random())
-// this.reactLogo.y = this.ge(this.reactLogo.x, this.circle1.x, this.circle1.y, 447)
-
-// this.reactContainer.addChild(this.reactLogo)
-// this.htmlContainer.addChild(this.htmlLogo)
-// this.cssContainer.addChild(this.cssLogo)
-Manager.app.stage.on("mousemove", ()=>{
-      this.moveOrbits(...Manager.mouseCoordinates())});
+            this.pixiContainer.popIn()
+            .chain(this.reactContainer.popIn()
+            .chain(this.htmlContainer.popIn()     
+            .chain(this.cssContainer.popIn()))) 
+            .start()
+this.update = function(deltaTime) {
+      this.pixiContainer.spin();
+      this.reactContainer.spin();
+      this.htmlContainer.spin();
+      this.cssContainer.spin();
+  }
+ }
 }
-
 
 moveOrbits (X, Y) {
 this.mousePosX = X
@@ -88,38 +90,97 @@ let finishPos = {
 const moveAll = new Tween(curPos)
       .to(finishPos, 500)
       .onUpdate(()=> {
-            this.circle1.x = curPos.cir1X
-            this.circle2.x = curPos.cir2X
-            this.circle3.x = curPos.cir3X
-            this.circle4.x = curPos.cir4X
-            this.circle5.x = curPos.cir5X
-            this.circle6.x = curPos.cir6X
-            this.circle7.x = curPos.cir7X
+            this.circle1.x = curPos.cir1X;
+            this.circle2.x = curPos.cir2X;
+            this.circle3.x = curPos.cir3X;
+            this.circle4.x = curPos.cir4X;
+            this.circle5.x = curPos.cir5X;
+            this.circle6.x = curPos.cir6X;
+            this.circle7.x = curPos.cir7X;
 
-            this.circle1.y = curPos.cir1Y
-            this.circle2.y = curPos.cir2Y
-            this.circle3.y = curPos.cir3Y
-            this.circle4.y = curPos.cir4Y
-            this.circle5.y = curPos.cir5Y
-            this.circle6.y = curPos.cir6Y
-            this.circle7.y = curPos.cir7Y
-            this.alpha = 0.6+ ((-this.screenHeight+30-this.circle1.y*16)/(-this.screenHeight+30))*0.4
+            this.circle1.y = curPos.cir1Y;
+            this.circle2.y = curPos.cir2Y;
+            this.circle3.y = curPos.cir3Y;
+            this.circle4.y = curPos.cir4Y;
+            this.circle5.y = curPos.cir5Y;
+            this.circle6.y = curPos.cir6Y;
+            this.circle7.y = curPos.cir7Y;
+            this.alpha = 0.6+ ((-this.screenHeight+30-this.circle1.y*16)/(-this.screenHeight+30))*0.4;
       })
       .easing(Easing.Cubic.Out)
       .start()
 }
 
 transitionIn() {
-      Manager.app.stage.addChildAt(Manager.skillScene,0)
+      Manager.app.stage.addChildAt(Manager.skillScene,1) //Put in front of viewport, but behind navbar
+      let updated = {alpha:this.alpha}
+let fadeIn = new Tween(updated)
+      if (PIXI.Loader.shared.progress<100) {
+      PIXI.Loader.shared.onProgress.add(()=> {
+            fadeIn
+            .to({alpha:PIXI.Loader.shared.progress/100},400)
+            .onUpdate(()=> {
+                  this.alpha = updated.alpha
+                  })
+            .onComplete(()=> {
+                  Manager.app.stage.on("mousemove", ()=>{
+                        this.moveOrbits(...Manager.mouseCoordinates())});
+                  
+            })
+            .start()
+      })
+      PIXI.Loader.shared.onComplete.once(()=> {
+
+            this.pixiContainer = new skillIcons("pixiIcon",this.circle7,557, 0.2+Math.random()/2, 0);
+            this.reactContainer = new skillIcons("reactIcon",this.circle6,447, 0.2+Math.random()/2, 0);
+            this.htmlContainer = new skillIcons("htmlIcon",this.circle5,347, 0.2+Math.random()/2, 0);
+            this.cssContainer = new skillIcons("cssIcon",this.circle4,257, 0.2+Math.random()/2, 0);
+            this.addChild(this.pixiContainer, this.reactContainer, this.htmlContainer, this.cssContainer)
+            this.pixiContainer.popIn()
+            .chain(this.reactContainer.popIn()
+            .chain(this.htmlContainer.popIn()     
+            .chain(this.cssContainer.popIn()))) 
+            .start()
+            this.update= function(deltaTime) {
+                  this.pixiContainer.spin();
+                  this.reactContainer.spin();
+                  this.htmlContainer.spin();
+                  this.cssContainer.spin();
+             }   
+      })
+      }
+      else {
+fadeIn
+.to({alpha:1},400)
+.onUpdate(()=> {
+      this.alpha = updated.alpha;
+      })
+.onComplete(()=> {
+      Manager.app.stage.on("mousemove", ()=>{
+            this.moveOrbits(...Manager.mouseCoordinates())});
+//       Manager.app.stage.on("pointerdown", ()=>{
+// new Tween(this)
+// .to({scale:1},300)
+// .start()
+// .repeat(1)
+// .yoyo(true)
+// .start()
+// })
+})
+.start()
 }
+}
+
 transitionOut() {
- const fadeOut=    new Tween(this.circle1.scale)
+      const alpha = this.alpha
+      const fadeOut=    new Tween(this.circle1.scale)
       .to({x:12,y:12},900)
       .onUpdate(()=> {
             this.circle2.scale = this.circle1.scale*0.7
             this.circle3.scale = this.circle1.scale*0.6
             this.circle4.scale = this.circle1.scale*0.5
-this.alpha = this.alpha*((12-this.circle1.scale.x)/12)
+this.alpha = alpha*((12-this.circle1.scale.x)/12)
+
       })
       .onComplete(()=> {
             Manager.skillScene.destroy();
@@ -130,6 +191,10 @@ this.alpha = this.alpha*((12-this.circle1.scale.x)/12)
               Manager.app.stage.off("mousemove")
               fadeOut.start()
 }
+downloadProgress(loader) {
+      const progressRatio = loader.progress / 100;
+  }
+
 resize(w,h) {
       this.screenWidth = w
       this.screenHeight = h
@@ -137,22 +202,13 @@ this.x = this.screenWidth/2
 
 }
 update(deltaTime) {
-      this.pixiContainer.spin();
-      this.reactContainer.spin();
-      this.htmlContainer.spin();
-      this.cssContainer.spin();
-
-//  this.reactLogo.angle -=0.2
-// this.pixiContainer.x = this.circle7.x
-// this.pixiContainer.y = this.circle7.y
-// this.reactContainer.x = this.circle6.x
-// this.reactContainer.y = this.circle6.y
  }
 }
 
 export class skillIcons extends PIXI.Container {
       constructor(sprite,circle, R, speed) {
             super();
+            this.alpha = 0
             this.speed= speed
             this.spriteName= sprite
             this.circle = circle
@@ -181,4 +237,8 @@ getCircleY  (iconX, X1,Y1, r) {
       else if (delta <0) {console.log("error shoulna happened")}
                               }
 
+  popIn()  {
+      return new Tween(this)
+      .to({alpha:1},300)
+}
 }

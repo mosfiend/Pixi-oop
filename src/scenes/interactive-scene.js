@@ -76,17 +76,17 @@ update(deltaTime) {
                                        .concat(curLayer.slice(randIndex+1))
     }
     }
-    if (this.layerIds[layer].length<600) {
+    if (this.layerIds[layer].length<800) {
     const newBat = new PIXI.AnimatedSprite(this.batMovement.move_right)
     const moveInterval =  2500+ Math.floor(Math.random()*500)
     const randomDirection =[-1,1][Math.floor(Math.random()*2)]
     
-    newBat.y = this.screenHeight/2 +Math.random()*this.screenHeight/4;
+    newBat.y = 32*32/2 +Math.random()*32*32/4;
     newBat.animationSpeed = 0.1;
     
     newBat.play();
     new Tween(newBat)
-    .to({x:this.screenWidth+1, y:newBat.y + randomDirection*Math.floor(Math.random()*400) }, moveInterval)
+    .to({x:52*32+1, y:newBat.y + randomDirection*Math.floor(Math.random()*400) }, moveInterval)
     .yoyo(true)
     .onComplete(()=> { 
         newBat.destroy()

@@ -8,4 +8,7 @@ export const assets = [
     { name: "bat", url: "./assets/images/texture.json"},
     { name: "tileset", url: "./assets/images/tileset.json"},
     { name: "terrain", url: "./assets/images/terrain.json"},
+    //  Projects  scene
+    { name: "pancreas", url: "./assets/images/projects/pancreas.png"},
+    { name: "workout", url: "./assets/images/projects/workout.png"},
 ]

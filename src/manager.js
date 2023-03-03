@@ -1,8 +1,10 @@
 import * as PIXI from "pixi.js";
 import {Tween, Group } from "tweedle.js";
 import { Viewport } from "pixi-viewport";
-import { OrbitScene } from "./scenes/orbit-scene";
-import { WorldMap } from "./scenes/interactive-scene";
+import { Navbar } from "./navBar.js";
+import { assets } from "./assets/assets.js";
+import { OrbitScene } from "./scenes/orbit-scene.js";
+import { ProjectScene } from "./scenes/projects-scene.js";
 export class Manager {
      constructor() { 
      }
@@ -10,7 +12,7 @@ export class Manager {
      static navBar;
      static mapScene;
      static skillScene;
-     static loadingScene;
+     static projectScene;
      static currentScene;
      static x;
      static y;
@@ -23,7 +25,6 @@ export class Manager {
         return Math.max(document.documentElement.clientHeight, window.innerWidth || 0);
     }
     
-
     // Use this function ONCE to start the entire machinery
  static initialize(width, height, background) {
 
@@ -65,7 +66,6 @@ static vp() {
         // divWheel: null,                              // div to attach the wheel event (uses document.body as default)
         // disableOnContextMenu: false,                 // remove oncontextmenu=() => {} from the divWheel element
         interaction: Manager.app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
-
     })
 Manager.app.stage.addChildAt(Manager.viewport, 0) // could have just used addChild, just being safe
  }
@@ -74,16 +74,23 @@ Manager.app.stage.addChildAt(Manager.viewport, 0) // could have just used addChi
     Manager.navbar = navScene;
     Manager.app.stage.addChild(Manager.navbar);
  }
-static loadScene(loadingScene) {
-Manager.loadingScene = loadingScene
-    Manager.app.stage.addChild(Manager.loadingScene); 
-Manager.app.stage.addChild(Manager.loadingScene)
+static startLoading() {
+function gameLoaded() {
+    Manager.annexes(new Navbar());
+    Manager.startScene(new ProjectScene());
+}
+PIXI.Loader.shared.add(assets);
+    PIXI.Loader.shared.onComplete.once(gameLoaded)
+    PIXI.Loader.shared.load();
 }
 
 static startScene(scene1) {
-    Manager.currentScene = "skillScene"
-    Manager.skillScene = scene1
-    Manager.app.stage.addChild(Manager.skillScene)
+    Manager.currentScene = "projectScene"
+    Manager.projectScene = scene1
+    Manager.projectScene.transitionIn()
+    // Manager.currentScene = "skillScene"
+    // Manager.skillScene = scene1
+    // Manager.skillScene.transitionIn()
 }
 
 static changeScene(scene, name) {  
@@ -106,7 +113,6 @@ static update(deltaTime) {
 
       if (Manager.navBar) {
             Manager.navBar.update(deltaTime)
-
         }
     }
 }
